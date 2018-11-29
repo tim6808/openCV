@@ -3,11 +3,12 @@ import numpy as np
 
 
 camera = cv2.VideoCapture(0)
-# 初始化平均影像
+# get webcam
 
 firstframe = None
 
 while True:
+    #get firstframe  frame
     ret, frame = camera.read()    
     
     if not ret:
@@ -18,19 +19,17 @@ while True:
         firstframe = gray
         continue
     frameDelta = cv2.absdiff(firstframe, gray)
-    # 篩選出變動程度大於門檻值的區域
+    # setup threshold and type篩選出變動程度大於門檻值的區域
     # cv2.threshold (src, thresh, maxval, type)  type get 0~4 
     thresh = cv2.threshold(frameDelta, 10, 255, 1)[1]
     thresh = cv2.dilate(thresh, None, iterations = 2)
     cntImg, cnts, _ = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     for c in cnts:
-        # 忽略太小的區域
+        # Ignore areas that too small  忽略太小的區域
         if cv2.contourArea(c) < 25:
             continue
             
-        # 偵測到物體，可以自己加上處理的程式碼在這裡...
-
         # 計算等高線的外框範圍
         (x, y, w, h) = cv2.boundingRect(c)
         if x is not 0 and y is not 0 and w is not 640 and h is not 480:
